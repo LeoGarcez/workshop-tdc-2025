@@ -1,0 +1,93 @@
+org: onerep
+app: serverless-tdc
+service: workshop
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  versionFunctions: false
+  memorySize: 512
+  timeout: 10
+  logRetentionInDays: 3
+  stage: production
+  region: sa-east-1
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+
+functions:
+  createUser:
+    handler: handler.create
+    events:
+      - http:
+          path: users
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+
+  getAllUsers:
+    handler: handler.getAll
+    events:
+      - http:
+          path: users
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+
+  getUser:
+    handler: handler.getOne
+    events:
+      - http:
+          path: users/{id}
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+
+  updateUser:
+    handler: handler.update
+    events:
+      - http:
+          path: users/{id}
+          method: put
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+
+  deleteUser:
+    handler: handler.remove
+    events:
+      - http:
+          path: users/{id}
+          method: delete
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+              - Authorization
+            allowCredentials: true
+
+
